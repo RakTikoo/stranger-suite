@@ -1,0 +1,1 @@
+# samplelib is vendored under local_deps/ (see README) - no index package exists
