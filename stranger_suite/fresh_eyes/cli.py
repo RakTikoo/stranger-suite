@@ -26,10 +26,12 @@ def main(argv=None):
                    help="heuristic = free offline stand-in; llm = your own API key (see README presets)")
     p.add_argument("--preset", default=None,
                    help="LLM free-tier preset name (groq-free, gemini-free, openrouter-free, cerebras-free, ollama-local)")
+    p.add_argument("--model", default=None,
+                   help="override the preset's model (providers rotate model names; the preset may lag)")
     args = p.parse_args(argv)
     if args.planner == "llm":
         try:
-            planner = LLMPlanner(preset=args.preset)
+            planner = LLMPlanner(preset=args.preset, model=args.model)
         except PlannerError as e:
             print(f"error: {e}", file=sys.stderr)
             return 2
