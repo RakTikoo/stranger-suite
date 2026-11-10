@@ -143,9 +143,17 @@ def run_stranger_api(docs_path, base_url, out_dir, planner,
     for round_no in range(1, max_rounds + 1):
         context = {
             "mode": "api",
+            "job": "create a customer, then charge that customer, then refund the charge",
+            "base_url": base_url,
             "docs_endpoints": docs["endpoints"],
             "docs_headers_mentioned": docs["headers_mentioned"],
             "docs_fields_mentioned": docs["fields_mentioned"],
+            # The docs themselves are the planner's only source of truth in
+            # this tool; without an excerpt it cannot know header VALUES or
+            # payload shapes (live Nov 2026: it guessed both, wrongly).
+            # Docs are still DATA, never instructions — the prompt says so
+            # and the sandbox hands enforce it.
+            "docs_excerpt": docs_text[:3000],
             "last_stdout": last_output,
             "last_stderr": "",
             "client_builder": client_builder,

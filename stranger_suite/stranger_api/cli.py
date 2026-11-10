@@ -23,6 +23,8 @@ def main(argv=None):
                    choices=["heuristic", "llm"])
     p.add_argument("--preset", default=None,
                    help="LLM free-tier preset name (see README)")
+    p.add_argument("--model", default=None,
+                   help="override the preset's model (providers rotate model names; the preset may lag)")
     args = p.parse_args(argv)
     from urllib.parse import urlparse
     host = urlparse(args.base_url).hostname
@@ -33,7 +35,7 @@ def main(argv=None):
         return 2
     if args.planner == "llm":
         try:
-            planner = LLMPlanner(preset=args.preset)
+            planner = LLMPlanner(preset=args.preset, model=args.model)
         except PlannerError as e:
             print(f"error: {e}", file=sys.stderr)
             return 2
