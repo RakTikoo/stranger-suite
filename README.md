@@ -63,7 +63,8 @@ non-localhost base URLs on purpose: never practise on a production API.
 
 ## The brain: bring your own key — free tiers are fine, no paid key required
 
-Live mode works on **free tiers**; you do not need a paid API key. The
+Live mode works on **free tiers** (plus one trial route — see the
+Cerebras row); you do not need a paid API key. The
 planner talks to any OpenAI-compatible endpoint. Presets (limits checked
 Nov 2026 — they can change; keys are never stored in this repo, they come
 from your own environment variable `STRANGER_LLM_API_KEY`):
@@ -71,9 +72,9 @@ from your own environment variable `STRANGER_LLM_API_KEY`):
 | Preset | Endpoint | Example model | Free limits (Nov 2026) |
 |---|---|---|---|
 | `groq-free` | api.groq.com/openai/v1 | qwen/qwen3.8-27b | ~30 RPM, ~1,000 req/day |
-| `gemini-free` | generativelanguage.googleapis.com/v1beta/openai/ | gemini-2.5-flash | AI Studio free tier — **warning:** on the free tier Google may use prompts to improve its products. Fine for public test fixtures; do not send private code. |
-| `openrouter-free` | openrouter.ai/api/v1 | qwen/qwen3-coder:free | ~50 req/day on an unfunded account |
-| `cerebras-free` | api.cerebras.ai/v1 | qwen-3-32b | ~1M tokens/day |
+| `gemini-free` | generativelanguage.googleapis.com/v1beta/openai/ | gemini-3.5-flash-lite | AI Studio free tier — **warning:** on the free tier Google may use prompts to improve its products. Fine for public test fixtures; do not send private code. (Model updated Nov 10, 2026: gemini-2.5-flash was deprecated by Google; this is its documented replacement.) |
+| `openrouter-free` | openrouter.ai/api/v1 | google/gemma-4-31b-it:free | ~50 req/day on an unfunded account (model verified present in OpenRouter's live list Nov 10, 2026; the :free lineup rotates often — override with `--model`) |
+| `cerebras-trial` | api.cerebras.ai/v1 | qwen-3.8-27b | **No standing free tier anymore** — one-time $5 trial credit, payment method required, expires 30 days after activation. (Renamed from `cerebras-free` on Nov 10, 2026: it is a trial, not a free tier.) |
 | `ollama-local` | localhost:11434/v1 | qwen3:8b | **Keyless.** Runs on your own machine via Ollama. Zero cost forever, nothing leaves the machine. |
 
 ```
