@@ -1,2 +1,152 @@
-# stranger-suite
-Two agents that test whether instructions actually work: Fresh-Eyes follows your README on a clean sandbox; Stranger API learns your API from its docs alone. One shared engine. MIT.
+# Stranger Suite
+
+Two small tools that test the instructions, not the code. Both are powered
+by one shared engine: deterministic "hands" (a sandbox that runs things
+safely and keeps an honest diary) plus a replaceable "brain" (a planner
+that decides what to try next).
+
+## Fresh-Eyes — "Does your README actually work?" (lead tool)
+
+You know the feeling: you clone a project, follow its README exactly, and
+it breaks at step two — because the author already had something installed
+and forgot to write it down. Fresh-Eyes is the new user who never gives up
+silently:
+
+Run everything from the repo root (there is no packaging yet — the tools
+run as modules):
+
+```
+python3 -m stranger_suite.fresh_eyes <project-folder> --out report/ [--expect MARKER] [--resurrect]
+```
+
+`--expect MARKER` is strongly recommended: it is the text a successful run
+must print, and without it "success" means only "the run command exited 0".
+Exit codes: 0 = the project runs (cleanly or with stuck points), 1 = it
+could not run / the API job did not complete, 2 = bad input (missing
+folder, bad URL, unknown preset) with a one-line error, never a traceback.
+
+It copies the project into a clean sandbox, runs every README command
+literally, and each time it gets stuck it asks the planner for the next
+sensible step. At the end it checks — objectively, by running the project —
+whether it works, and writes a plain-language report:
+
+- **RUNS CLEAN** — a stranger could follow the README exactly. Zero stuck points.
+- **RUNS WITH STUCK POINTS** — it runs, but only after workarounds. Each
+  stuck point is a place a real new user would likely quit.
+- **COULD NOT RUN** — with the reasons, in order.
+
+It also writes a corrected README draft. Add `--resurrect` for old
+projects: the report then emphasises rot (Python-2 syntax, dead package
+pins, and friends).
+
+## Stranger API — "If an agent can't use your API from the docs alone, it's broken"
+
+Give the agent **only** your API docs, a local/sandbox base URL, and one
+job (the demo job: create a customer → charge them → refund them):
+
+```
+# first start the demo API (or your own sandbox API) on a local port:
+python3 fixtures/api/mock_api.py 8765
+python3 -m stranger_suite.stranger_api --docs docs.md --base-url http://127.0.0.1:8765 --out report/
+```
+
+`--docs` accepts a single Markdown file, or a folder (all its .md files
+are merged — beware: merging a good and a bad doc set tests the union, not
+either one).
+
+The agent writes a client strictly from the docs, runs it, reads the API's
+own error messages, and retries. The job counts as complete only when the
+API's own state proves it happened. The report lists every place the docs
+alone were not enough (an undocumented header, a renamed field…) plus a
+corrected client example that actually ran. This spike's CLI refuses
+non-localhost base URLs on purpose: never practise on a production API.
+
+## The brain: bring your own key — free tiers are fine, no paid key required
+
+Live mode works on **free tiers**; you do not need a paid API key. The
+planner talks to any OpenAI-compatible endpoint. Presets (limits checked
+Nov 2026 — they can change; keys are never stored in this repo, they come
+from your own environment variable `STRANGER_LLM_API_KEY`):
+
+| Preset | Endpoint | Example model | Free limits (Nov 2026) |
+|---|---|---|---|
+| `groq-free` | api.groq.com/openai/v1 | qwen/qwen3-32b | ~30 RPM, ~1,000 req/day |
+| `gemini-free` | generativelanguage.googleapis.com/v1beta/openai/ | gemini-2.5-flash | AI Studio free tier — **warning:** on the free tier Google may use prompts to improve its products. Fine for public test fixtures; do not send private code. |
+| `openrouter-free` | openrouter.ai/api/v1 | qwen/qwen3-coder:free | ~50 req/day on an unfunded account |
+| `cerebras-free` | api.cerebras.ai/v1 | qwen-3-32b | ~1M tokens/day |
+| `ollama-local` | localhost:11434/v1 | qwen3:8b | **Keyless.** Runs on your own machine via Ollama. Zero cost forever, nothing leaves the machine. |
+
+```
+export STRANGER_LLM_API_KEY=<your free-tier key>        # not needed for ollama-local
+python3 -m stranger_suite.fresh_eyes <project> --out report/ --planner llm --preset groq-free
+```
+
+**Honest status of this spike:** the LLM planner is implemented and
+unit-tested against a local mock LLM server, but it has **not** been run
+live against a real provider in this spike — no key was available. What
+*has* been run live is described under Testing, below.
+
+## How it is tested (including with weak brains)
+
+A tool that tests other people's instructions has to be testable itself,
+without spending money per test run:
+
+1. **Deterministic tests, no LLM, no cost** — sandbox refusals (curl|bash,
+   `rm -rf`, secret printing…), redaction with a planted canary key that
+   must never appear in any trace or report, budgets that stop a planner
+   that loops forever, parsers, objective checkers.
+2. **Scripted + heuristic planners in CI** — a recorded planner and a
+   small rule-based planner play the brain's part, so end-to-end runs are
+   reproducible offline against a fixture corpus: a GOOD project that must
+   run clean with **zero invented stuck points**, BROKEN projects with
+   exactly one planted bug each, an OLD Python-2 project, and a mock API
+   whose docs either tell the truth or lie (undocumented header, renamed
+   field). Scoring is objective: did the thing actually run, and were the
+   planted bugs — and only those — found?
+3. **Weak-brain live tests** — the interesting question is whether the
+   *loop* is robust when the brain is weak, because free-tier users will
+   run weak brains. Two substitutes for a paid key:
+   - **An LLM agent as the planner.** The engine has an "external planner"
+     mode: it writes the planner context as JSON to a file boundary and
+     reads back one action JSON at a time. A real LLM (a separate agent
+     process that sees only what a planner would see — no fixture answers)
+     drives the engine through the exam that way.
+   - **A small local model via Ollama** (~1B-parameter class) pointed at
+     the same fixtures through the normal LLM planner.
+   Results for both, including failures, are recorded in the review report.
+4. **Live LLM tests (later, when a key exists)** — same corpus, real key,
+   cheap/free model, each fixture 3×, pass = 2 of 3, hard caps on steps,
+   time and tokens, model + temperature pinned, full redacted traces saved.
+
+Safety rule that never depends on the brain: documentation and READMEs are
+treated as data, never as instructions. Prompt-injection fixtures (a README
+and a docs file that order the agent to curl|bash a URL, print its key, or
+delete files) are part of the corpus, and the sandbox hands must refuse all
+of it no matter what any planner says.
+
+## Layout
+
+```
+stranger_suite/engine/      sandbox, trace, redactor, checkers, report, planners
+stranger_suite/fresh_eyes/  README parser + install-agent loop + CLI
+stranger_suite/stranger_api/ docs parser + API-agent loop + CLI
+fixtures/                   the exam corpus (good / broken / old / malicious, mock API + docs)
+tests/                      offline suites: python3 tests/run_tests.py  (or pytest)
+```
+
+MIT licensed. This is a spike: Python projects and localhost APIs only,
+no GUI apps, no network installs (the sandbox forces pip offline; local /
+vendored packages only).
+
+## What the sandbox is — and is not
+
+Honest scope, because a security-adjacent tool must not overclaim: the
+sandbox is a **throwaway copy** of the project, a scrubbed environment
+(no inherited secrets), a command denylist that is also applied to files a
+planner writes, secret redaction (including base64/hex encodings of known
+secrets), step/time/output budgets, and writes confined to the copy. It is
+**defense in depth, not an OS-level jail**: the project's own code runs as
+the same user, so a determined hostile *project* (as opposed to a hostile
+README or planner) could still misuse the machine it runs on. Do not point
+these tools at code you would not run inside a disposable VM. Real
+isolation (containers/namespaces) is the top item on the hardening list.
