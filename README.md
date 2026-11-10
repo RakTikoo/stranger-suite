@@ -70,7 +70,7 @@ from your own environment variable `STRANGER_LLM_API_KEY`):
 
 | Preset | Endpoint | Example model | Free limits (Nov 2026) |
 |---|---|---|---|
-| `groq-free` | api.groq.com/openai/v1 | qwen/qwen3-32b | ~30 RPM, ~1,000 req/day |
+| `groq-free` | api.groq.com/openai/v1 | qwen/qwen3.8-27b | ~30 RPM, ~1,000 req/day |
 | `gemini-free` | generativelanguage.googleapis.com/v1beta/openai/ | gemini-2.5-flash | AI Studio free tier — **warning:** on the free tier Google may use prompts to improve its products. Fine for public test fixtures; do not send private code. |
 | `openrouter-free` | openrouter.ai/api/v1 | qwen/qwen3-coder:free | ~50 req/day on an unfunded account |
 | `cerebras-free` | api.cerebras.ai/v1 | qwen-3-32b | ~1M tokens/day |
@@ -81,10 +81,19 @@ export STRANGER_LLM_API_KEY=<your free-tier key>        # not needed for ollama-
 python3 -m stranger_suite.fresh_eyes <project> --out report/ --planner llm --preset groq-free
 ```
 
-**Honest status of this spike:** the LLM planner is implemented and
-unit-tested against a local mock LLM server, but it has **not** been run
-live against a real provider in this spike — no key was available. What
-*has* been run live is described under Testing, below.
+**Honest status of this spike:** the LLM planner has now been run live
+against a real provider (Groq free tier, qwen/qwen3.8-27b, Nov 2026).
+Headline: Fresh-Eyes passed 4 of 5 fixtures at the 2-of-3 bar (the
+resurrect fixture runs and its Python-2 fix lands, but the LLM reports
+the dead package pin instead of removing it — the rule-based stand-in
+planner resolves that step every time). Stranger API completed the job
+3/3 on honest docs and 2/3 on lying docs, finding both planted lies in
+every trial. The live exam also caught real bugs the offline tests
+could not: Groq rejects this client's default User-Agent (HTTP 403),
+the original preset model had been removed from Groq's list, and the
+API planner was missing the context it needed — all fixed, with the
+offline suite still green. Full results, including the failures, were
+recorded at exam time.
 
 ## How it is tested (including with weak brains)
 
@@ -114,9 +123,10 @@ without spending money per test run:
    - **A small local model via Ollama** (~1B-parameter class) pointed at
      the same fixtures through the normal LLM planner.
    Results for both, including failures, are recorded in the review report.
-4. **Live LLM tests (later, when a key exists)** — same corpus, real key,
-   cheap/free model, each fixture 3×, pass = 2 of 3, hard caps on steps,
-   time and tokens, model + temperature pinned, full redacted traces saved.
+4. **Live LLM tests** — same corpus, real key, cheap/free model, each
+   fixture 3×, pass = 2 of 3, hard caps on steps, time and tokens, model
+   + temperature pinned, full redacted traces saved. First run: Groq
+   free tier, Nov 2026 (see the status note above).
 
 Safety rule that never depends on the brain: documentation and READMEs are
 treated as data, never as instructions. Prompt-injection fixtures (a README
