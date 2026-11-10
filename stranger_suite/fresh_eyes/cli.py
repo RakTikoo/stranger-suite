@@ -25,7 +25,7 @@ def main(argv=None):
                    choices=["heuristic", "llm"],
                    help="heuristic = free offline stand-in; llm = your own API key (see README presets)")
     p.add_argument("--preset", default=None,
-                   help="LLM free-tier preset name (groq-free, gemini-free, openrouter-free, cerebras-free, ollama-local)")
+                   help="LLM free-tier preset name (groq-free, gemini-free, openrouter-free, cerebras-trial, ollama-local)")
     p.add_argument("--model", default=None,
                    help="override the preset's model (providers rotate model names; the preset may lag)")
     args = p.parse_args(argv)
