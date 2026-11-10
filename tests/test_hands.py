@@ -70,7 +70,7 @@ def test_docs_parser():
 
 
 def test_free_tier_presets_present_and_keyless_ollama():
-    for name in ("groq-free", "gemini-free", "openrouter-free", "cerebras-free", "ollama-local"):
+    for name in ("groq-free", "gemini-free", "openrouter-free", "cerebras-trial", "ollama-local"):
         assert name in FREE_TIER_PRESETS
     assert FREE_TIER_PRESETS["ollama-local"]["env_key"] is None
     assert FREE_TIER_PRESETS["ollama-local"]["base_url"].startswith("http://localhost")
