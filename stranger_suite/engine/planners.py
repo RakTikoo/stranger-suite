@@ -218,21 +218,21 @@ FREE_TIER_PRESETS = {
     },
     "gemini-free": {
         "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
-        "model": "gemini-2.5-flash",
+        "model": "gemini-3.5-flash-lite",
         "env_key": "STRANGER_LLM_API_KEY",
-        "notes": "Google AI Studio free tier. WARNING: on the free tier Google may use prompts to improve its products — fine for public test fixtures, do NOT send private code.",
+        "notes": "Google AI Studio free tier. WARNING: on the free tier Google may use prompts to improve its products — fine for public test fixtures, do NOT send private code. Model updated Nov 10, 2026: gemini-2.5-flash was deprecated by Google (no longer selectable by new users; from Dec 1, 2026 requests to it auto-route here) — gemini-3.5-flash-lite is Google's documented replacement. It defaults to minimal thinking, which suits this planner's small JSON actions.",
     },
     "openrouter-free": {
         "base_url": "https://openrouter.ai/api/v1",
-        "model": "qwen/qwen3-coder:free",
+        "model": "google/gemma-4-31b-it:free",
         "env_key": "STRANGER_LLM_API_KEY",
-        "notes": "OpenRouter :free models, ~50 req/day on an unfunded account (Nov 2026, can change).",
+        "notes": "OpenRouter :free models, ~50 req/day on an unfunded account (Nov 2026, can change). Model updated Nov 10, 2026: qwen/qwen3-coder:free was removed from OpenRouter's live model list (404); google/gemma-4-31b-it:free was verified present in that list the same day. The :free lineup rotates often and this preset has NOT been live-tested yet — override with --model when it changes.",
     },
-    "cerebras-free": {
+    "cerebras-trial": {
         "base_url": "https://api.cerebras.ai/v1",
-        "model": "qwen-3-32b",
+        "model": "qwen-3.8-27b",
         "env_key": "STRANGER_LLM_API_KEY",
-        "notes": "Cerebras free tier, ~1M tokens/day (Nov 2026, can change).",
+        "notes": "Updated Nov 10, 2026: Cerebras no longer offers a standing free tier. New accounts get a one-time $5 trial credit AFTER adding a payment method; it expires 30 days after activation (trial limits ~5 RPM, ~1M tokens/day per model). This preset was renamed from cerebras-free to cerebras-trial on Nov 10, 2026 for exactly that reason — the old name now errors as an unknown preset. Model updated the same day: qwen-3-32b was removed from the Cerebras catalog; the catalog now lists only gpt-oss-120b and qwen-3.8-27b.",
     },
     "ollama-local": {
         "base_url": "http://localhost:11434/v1",
