@@ -95,6 +95,20 @@ API planner was missing the context it needed — all fixed, with the
 offline suite still green. Full results, including the failures, were
 recorded at exam time.
 
+**Three-brain scoreboard** (same fixture exams, objective verdicts;
+a free-tier Groq key was used for Phase C and is not stored anywhere):
+- **Phase A — a strong LLM agent as the planner:** 4/4 exams passed,
+  5 planner actions total.
+- **Phase B — a small local model (Ollama qwen2.5-coder:1.5b):** 1/4 —
+  valid JSON every time, wrong strategies; the engine stayed honest
+  throughout. Conclusion: ~8B is the realistic local floor.
+- **Phase C — Groq free tier (qwen/qwen3.8-27b, Nov 2026):** 4/4 on
+  the Phase A/B exam set at the 2-of-3 bar, 5 planner actions on clean
+  passes, no malformed-JSON replies and no false success claims —
+  plus the resurrect-fixture partial above, stated exactly as observed.
+  As originally shipped it scored 0/6 on the API exam for the context
+  reasons described in the status note; the fixes are in this repo.
+
 ## How it is tested (including with weak brains)
 
 A tool that tests other people's instructions has to be testable itself,
