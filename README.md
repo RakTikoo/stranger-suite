@@ -5,6 +5,33 @@ by one shared engine: deterministic "hands" (a sandbox that runs things
 safely and keeps an honest diary) plus a replaceable "brain" (a planner
 that decides what to try next).
 
+## See it work — a real captured run
+
+The fixture project `fixtures/fresh_missing_dep` ships a README that says
+only `python3 app.py` — but the app needs a helper library vendored in
+`local_deps/`, a step the README never mentions. Here is an actual
+Fresh-Eyes run against it (offline heuristic planner, no API key),
+captured 2026-11-11:
+
+```
+$ python3 -m stranger_suite.fresh_eyes fixtures/fresh_missing_dep --out report/ --expect HELLO_FROM_SAMPLELIB
+{
+  "verdict": "RUNS WITH STUCK POINTS",
+  "stuck_points": 1,
+  "report": "report/report.md"
+}
+```
+
+From the report it wrote:
+
+> ### 1. README line 8: `python3 app.py`
+> - What went wrong: ModuleNotFoundError: No module named 'samplelib'
+> - What the agent tried: module 'samplelib' found vendored under local_deps; retry with PYTHONPATH
+> - Fixed: yes
+
+That stuck point is the product: it is the exact place a real new user
+would likely have given up, found and named automatically.
+
 ## Fresh-Eyes — "Does your README actually work?" (lead tool)
 
 You know the feeling: you clone a project, follow its README exactly, and
