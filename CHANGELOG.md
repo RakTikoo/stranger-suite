@@ -1,9 +1,13 @@
 # Changelog
 
 All notable changes to Stranger Suite, newest first. Everything so far
-is the 0.1.0 line (`__version__` in `stranger_suite/__init__.py`); there
-are no tagged releases yet, so entries are dated by when they landed on
-`main`.
+is the 0.1.0 line (`__version__` in `stranger_suite/__init__.py`).
+
+## v0.1.0 — 2026-11-12
+
+First tagged release, at the merge of PR #3. Includes the Fresh-Eyes
+missing-input-file fixture (`fixtures/fresh_missing_file/`) contributed
+in that PR; entries below are dated by when they landed on `main`.
 
 ## 2026-11-10 — Preset fixes
 
