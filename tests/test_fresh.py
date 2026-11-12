@@ -53,6 +53,31 @@ def test_missing_env_found_and_recovers():
            "DEMO_GREETING" in rep["stuck_points"][0]["error"]
 
 
+def test_missing_file_found_but_heuristic_cannot_recover():
+    # New fault class: the app needs an input file (greeting.txt) that the
+    # README never tells a stranger to create. The agent finds and names the
+    # fault — the stuck point's error names the file — but the heuristic
+    # planner has no rule for a missing non-code file, so the honest current
+    # verdict is COULD NOT RUN with the stuck point unresolved.
+    rep, _ = run("fresh_missing_file", expect_marker="HELLO_FROM_FILE")
+    assert rep["verdict"] == "COULD NOT RUN", rep
+    assert len(rep["stuck_points"]) == 1, rep["stuck_points"]
+    assert not rep["stuck_points"][0]["resolved"]
+    assert "greeting.txt" in rep["stuck_points"][0]["error"]
+
+
+def test_scripted_planner_recovers_missing_file():
+    # The fault is recoverable in principle: create the file the README
+    # forgot to mention, and the same app runs clean.
+    planner = ScriptedPlanner([Action("write_file", path="greeting.txt",
+                                      content="HELLO_FROM_FILE\n",
+                                      note="scripted: create input file")])
+    rep, _ = run("fresh_missing_file", planner=planner,
+                 expect_marker="HELLO_FROM_FILE")
+    assert rep["verdict"] == "RUNS WITH STUCK POINTS"
+    assert rep["stuck_points"][0]["resolved"]
+
+
 def test_old_project_resurrect():
     rep, _ = run("fresh_old", expect_marker="HELLO_FROM_2016", resurrect=True)
     assert rep["verdict"] == "RUNS WITH STUCK POINTS", rep
