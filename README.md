@@ -1,9 +1,18 @@
 # Stranger Suite
 
-Two small tools that test the instructions, not the code. Both are powered
-by one shared engine: deterministic "hands" (a sandbox that runs things
-safely and keeps an honest diary) plus a replaceable "brain" (a planner
-that decides what to try next).
+**Does your README actually work for someone who has never seen your
+project? Does your API documentation?** Stranger Suite tests the
+instructions, not the code. **Fresh-Eyes** hands your project to a
+tireless new user who follows the README exactly and reports the exact
+step where a real person would have given up. **Stranger API** hands
+your API docs to an AI agent with a key and checks whether it can do
+real work from the docs alone — the way a stranger would.
+
+Both tools share one engine: deterministic "hands" (a sandbox that
+runs things safely and keeps an honest diary) plus a replaceable
+"brain" (a planner that decides what to try next). The Fresh-Eyes
+scoring runs fully offline; the API exams are bring-your-own-key, and
+free tiers are fine.
 
 ![Stranger Suite terminal demo](stranger-suite.gif)
 
