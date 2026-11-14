@@ -5,6 +5,8 @@ by one shared engine: deterministic "hands" (a sandbox that runs things
 safely and keeps an honest diary) plus a replaceable "brain" (a planner
 that decides what to try next).
 
+![Stranger Suite terminal demo](stranger-suite.gif)
+
 ## See it work — a real captured run
 
 The fixture project `fixtures/fresh_missing_dep` ships a README that says
