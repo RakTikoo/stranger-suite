@@ -1,5 +1,7 @@
 # Stranger Suite
 
+[![Tests](https://github.com/RakTikoo/stranger-suite/actions/workflows/tests.yml/badge.svg)](https://github.com/RakTikoo/stranger-suite/actions/workflows/tests.yml)
+
 **Does your README actually work for someone who has never seen your
 project? Does your API documentation?** Stranger Suite tests the
 instructions, not the code. **Fresh-Eyes** hands your project to a
