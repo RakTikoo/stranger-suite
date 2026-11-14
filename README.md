@@ -202,3 +202,8 @@ the same user, so a determined hostile *project* (as opposed to a hostile
 README or planner) could still misuse the machine it runs on. Do not point
 these tools at code you would not run inside a disposable VM. Real
 isolation (containers/namespaces) is the top item on the hardening list.
+
+
+---
+
+**More from this workshop:** [SkillScan](https://github.com/RakTikoo/skillscan) · [KiCad Preflight](https://github.com/RakTikoo/kicad-preflight) · [Expiry Radar](https://github.com/RakTikoo/expiry-radar) · [CI Command Truth](https://github.com/RakTikoo/ci-command-truth) · [PhantomDep PR Gate](https://github.com/RakTikoo/phantomdep-pr-gate) · [Living Contract Diff](https://github.com/RakTikoo/living-contract-diff) · [Handoff Reconciler](https://github.com/RakTikoo/handoff-reconciler)
