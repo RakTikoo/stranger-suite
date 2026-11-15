@@ -45,6 +45,30 @@ From the report it wrote:
 That stuck point is the product: it is the exact place a real new user
 would likely have given up, found and named automatically.
 
+## Install
+
+**pip / pipx — the `fresh-eyes` and `stranger-api` commands:**
+
+```bash
+pip install git+https://github.com/RakTikoo/stranger-suite
+# or, isolated:
+pipx install git+https://github.com/RakTikoo/stranger-suite
+```
+
+Not on PyPI — the git URL is the package source. Stdlib only, so
+nothing else gets installed with it.
+
+**Clone — run as modules from the repo root:**
+
+```bash
+git clone https://github.com/RakTikoo/stranger-suite
+cd stranger-suite
+python3 -m stranger_suite.fresh_eyes <project-folder> --out report/
+```
+
+Fresh-Eyes also runs in CI via the [GitHub Action](#github-action)
+below, and both tools can be called [as a library](#use-as-a-library).
+
 ## Fresh-Eyes — "Does your README actually work?" (lead tool)
 
 You know the feeling: you clone a project, follow its README exactly, and
@@ -52,10 +76,11 @@ it breaks at step two — because the author already had something installed
 and forgot to write it down. Fresh-Eyes is the new user who never gives up
 silently:
 
-Run everything from the repo root (there is no packaging yet — the tools
-run as modules):
+With the pip install the command is `fresh-eyes`; from a clone, run it
+as a module from the repo root. Same arguments either way:
 
 ```
+fresh-eyes <project-folder> --out report/ [--expect MARKER] [--resurrect]
 python3 -m stranger_suite.fresh_eyes <project-folder> --out report/ [--expect MARKER] [--resurrect]
 ```
 
@@ -90,6 +115,9 @@ python3 fixtures/api/mock_api.py 8765
 python3 -m stranger_suite.stranger_api --docs docs.md --base-url http://127.0.0.1:8765 --out report/
 ```
 
+With the pip install, the second command is `stranger-api --docs
+docs.md --base-url http://127.0.0.1:8765 --out report/`.
+
 `--docs` accepts a single Markdown file, or a folder (all its .md files
 are merged — beware: merging a good and a bad doc set tests the union, not
 either one).
@@ -100,6 +128,63 @@ API's own state proves it happened. The report lists every place the docs
 alone were not enough (an undocumented header, a renamed field…) plus a
 corrected client example that actually ran. This spike's CLI refuses
 non-localhost base URLs on purpose: never practise on a production API.
+
+## GitHub Action
+
+Fresh-Eyes runs as a GitHub Action — a README gate for CI. It follows
+your README with the free offline heuristic planner (no API key),
+writes the report to the job summary, and uploads it as an artifact.
+The check fails when the project **could not run** at all; set
+`fail-on-stuck-points: "true"` to also fail when it runs but a stranger
+would have got stuck on the way.
+
+```yaml
+name: Fresh-Eyes
+on: [pull_request]
+jobs:
+  fresh-eyes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: RakTikoo/stranger-suite@v0.1.0
+        with:
+          project: .
+          expect: "text a successful run must print"
+          # fail-on-stuck-points: "true"
+```
+
+Inputs: `project` (default `.`), `expect`, `out` (default
+`fresh-eyes-report`), `fail-on-stuck-points` (default `false`),
+`planner` (`heuristic` by default; `llm` uses your own key via the
+`llm-api-key` input and a `preset`), and `python-version` (default
+`3.12`). Outputs: `verdict` and `stuck-points`. See `action.yml`.
+
+## Use as a library
+
+The engine's public API and both tools' entry points are re-exported
+from the top-level package — no reaching into subpackages:
+
+```python
+from stranger_suite import HeuristicPlanner, run_fresh_eyes
+
+report = run_fresh_eyes(
+    "fixtures/fresh_missing_dep", "report/",
+    planner=HeuristicPlanner(),
+    expect_marker="HELLO_FROM_SAMPLELIB",
+)
+print(report["verdict"], "—", len(report["stuck_points"]), "stuck point(s)")
+# RUNS WITH STUCK POINTS — 1 stuck point(s)
+```
+
+That example is real: it is the same fixture run shown at the top of
+this README, driven through the library instead of the CLI.
+
+Also at the top level: `SandboxRunner`, `TraceRecorder`, `Redactor`,
+the planners (`Planner`, `ScriptedPlanner`, `LLMPlanner`,
+`ExternalPlanner`), `build_report` / `write_report`, the checkers
+(`check_exit_and_marker`, `check_http_state`), and the Stranger API
+side (`run_stranger_api`, `parse_docs`). The full list is
+`stranger_suite.__all__`.
 
 ## The brain: bring your own key — free tiers are fine, no paid key required
 
