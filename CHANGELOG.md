@@ -3,6 +3,28 @@
 All notable changes to Stranger Suite, newest first. Everything so far
 is the 0.1.0 line (`__version__` in `stranger_suite/__init__.py`).
 
+## Unreleased
+
+- **Packaging:** `pyproject.toml` added — `pip install
+  git+https://github.com/RakTikoo/stranger-suite` (or `pipx install …`)
+  installs the package plus `fresh-eyes` and `stranger-api` console
+  commands; the version is read from `stranger_suite.__version__`.
+  Still stdlib only, zero dependencies. The README's "there is no
+  packaging yet" note is gone, replaced by a real install section.
+- **GitHub Action:** new `action.yml` — Stranger Suite was the only
+  tool in the workshop without one. The composite action runs
+  Fresh-Eyes (offline heuristic planner by default; optional LLM
+  planner with your own key), writes the report to the job summary,
+  uploads it as an artifact, and exposes `verdict` / `stuck-points`
+  outputs; `fail-on-stuck-points` turns stuck points into a failing
+  check.
+- **Library API surfaced:** the engine's public API (`SandboxRunner`,
+  planners, `build_report`, checkers, …) and both tools' entry points
+  (`run_fresh_eyes`, `run_stranger_api`) are now re-exported from the
+  top-level `stranger_suite` package and documented in a new README
+  "Use as a library" section, with a worked example. The API itself is
+  unchanged.
+
 ## v0.1.0 — 2026-11-12
 
 First tagged release, at the merge of PR #3. Includes the Fresh-Eyes
