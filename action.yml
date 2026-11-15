@@ -1,0 +1,108 @@
+name: "Stranger Suite — Fresh-Eyes"
+description: "Run Fresh-Eyes on your project: it follows your README like a brand-new user (offline heuristic planner by default) and reports every place a stranger gets stuck. The report is written to the job summary and uploaded as an artifact."
+inputs:
+  project:
+    description: "Project folder to test (relative to the consumer workspace)"
+    required: false
+    default: "."
+  expect:
+    description: "Optional text the final run must print to count as success"
+    required: false
+    default: ""
+  out:
+    description: "Folder (relative to the consumer workspace) to write the report into"
+    required: false
+    default: "fresh-eyes-report"
+  fail-on-stuck-points:
+    description: "Fail the check when the project runs but with stuck points (by default the check fails only when the project could not run at all)"
+    required: false
+    default: "false"
+  planner:
+    description: "heuristic (free, offline) or llm (bring your own key via the llm-api-key input)"
+    required: false
+    default: "heuristic"
+  preset:
+    description: "LLM preset name when planner is llm (groq-free, gemini-free, openrouter-free, cerebras-trial, ollama-local)"
+    required: false
+    default: ""
+  llm-api-key:
+    description: "API key for the llm planner (pass a secret); ignored by the heuristic planner"
+    required: false
+    default: ""
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.12"
+outputs:
+  verdict:
+    description: "Fresh-Eyes verdict: RUNS CLEAN, RUNS WITH STUCK POINTS, or COULD NOT RUN"
+    value: ${{ steps.fresh-eyes.outputs.verdict }}
+  stuck-points:
+    description: "Number of stuck points found"
+    value: ${{ steps.fresh-eyes.outputs.stuck_points }}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Run Fresh-Eyes
+      id: fresh-eyes
+      shell: bash
+      # The stranger_suite package lives in the ACTION's checkout, while the
+      # project/out inputs are relative to the CONSUMER workspace (the step's
+      # working directory). Put the action path on PYTHONPATH and do NOT cd
+      # anywhere, so consumer-relative input paths keep resolving.
+      env:
+        PYTHONPATH: ${{ github.action_path }}
+        STRANGER_LLM_API_KEY: ${{ inputs.llm-api-key }}
+        FRESH_EYES_OUT: ${{ inputs.out }}
+        FAIL_ON_STUCK: ${{ inputs.fail-on-stuck-points }}
+      run: |
+        set +e
+        args=("${{ inputs.project }}" --out "${{ inputs.out }}" --planner "${{ inputs.planner }}")
+        if [ -n "${{ inputs.expect }}" ]; then
+          args+=(--expect "${{ inputs.expect }}")
+        fi
+        if [ -n "${{ inputs.preset }}" ]; then
+          args+=(--preset "${{ inputs.preset }}")
+        fi
+        python3 -m stranger_suite.fresh_eyes "${args[@]}" > fresh-eyes-result.json
+        code=$?
+        export FRESH_EYES_CODE="$code"
+        cat fresh-eyes-result.json
+        python3 - <<'PYEOF'
+        import json, os
+        code = int(os.environ.get("FRESH_EYES_CODE", "2"))
+        verdict, stuck = "ERROR", 0
+        try:
+            with open("fresh-eyes-result.json") as fh:
+                data = json.load(fh)
+            verdict = data["verdict"]
+            stuck = int(data["stuck_points"])
+        except Exception:
+            pass
+        final = code
+        if os.environ.get("FAIL_ON_STUCK") == "true" and stuck > 0 and code == 0:
+            final = 1
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            fh.write(f"verdict={verdict}\nstuck_points={stuck}\n")
+        with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as fh:
+            fh.write(f"## Fresh-Eyes: {verdict}\n\n")
+            fh.write(f"- Stuck points: {stuck}\n")
+            fh.write(f"- Report: uploaded as the `fresh-eyes-report` artifact "
+                     f"(folder `{os.environ.get('FRESH_EYES_OUT', '')}`)\n")
+            report = os.path.join(os.environ.get("FRESH_EYES_OUT", ""), "report.md")
+            if os.path.exists(report):
+                fh.write("\n" + open(report).read())
+        with open("fresh-eyes-exit.txt", "w") as fh:
+            fh.write(str(final))
+        PYEOF
+        exit "$(cat fresh-eyes-exit.txt)"
+    - name: Upload Fresh-Eyes report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: fresh-eyes-report
+        path: ${{ inputs.out }}
+        if-no-files-found: ignore
