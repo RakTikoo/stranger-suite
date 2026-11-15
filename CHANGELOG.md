@@ -10,7 +10,9 @@ is the 0.1.0 line (`__version__` in `stranger_suite/__init__.py`).
   installs the package plus `fresh-eyes` and `stranger-api` console
   commands; the version is read from `stranger_suite.__version__`.
   Still stdlib only, zero dependencies. The README's "there is no
-  packaging yet" note is gone, replaced by a real install section.
+  packaging yet" note is gone, replaced by a real install section;
+  CONTRIBUTING.md's matching stale lines (and its test count) were
+  corrected to match.
 - **GitHub Action:** new `action.yml` — Stranger Suite was the only
   tool in the workshop without one. The composite action runs
   Fresh-Eyes (offline heuristic planner by default; optional LLM
