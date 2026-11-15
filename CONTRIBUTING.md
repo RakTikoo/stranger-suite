@@ -1,12 +1,15 @@
 # Contributing to Stranger Suite
 
 Thanks for your interest. This is a small, deliberately simple project:
-pure Python standard library, no packaging yet, no dependencies to
-install. Contributions that keep it that way are very welcome.
+pure Python standard library, zero dependencies. Install it with pip
+from the git URL (see the README), or run it as modules from a clone.
+Contributions that keep it that way are very welcome.
 
 ## Running the project
 
-Everything runs from the repo root, as modules:
+From a clone, everything runs from the repo root, as modules (with the
+pip install, the same tools are the `fresh-eyes` / `stranger-api`
+commands):
 
 ```
 python3 -m stranger_suite.fresh_eyes <project-folder> --out report/ [--expect MARKER]
@@ -19,7 +22,7 @@ python3 -m stranger_suite.stranger_api --docs <docs-file> --base-url <local-api-
 python3 tests/run_tests.py
 ```
 
-All tests must pass (currently 27). The suite is fully offline and
+All tests must pass (currently 29). The suite is fully offline and
 deterministic — no network, no API keys. If your change fixes a bug or
 adds behaviour, add a test that would have caught it; several existing
 tests encode attacks found in adversarial review, and that pattern is
