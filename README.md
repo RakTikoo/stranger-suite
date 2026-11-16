@@ -16,6 +16,8 @@ runs things safely and keeps an honest diary) plus a replaceable
 scoring runs fully offline; the API exams are bring-your-own-key, and
 free tiers are fine.
 
+**First contribution?** Start with a [good first issue](https://github.com/RakTikoo/stranger-suite/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+
 ![Stranger Suite terminal demo](stranger-suite.gif)
 
 ## See it work — a real captured run
