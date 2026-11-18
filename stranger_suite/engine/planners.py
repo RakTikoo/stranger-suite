@@ -129,6 +129,18 @@ class HeuristicPlanner(Planner):
                               note=f"README never sets {var}; set a dummy value and retry")
             return Action("stop", note=f"still failing on env var {var}")
 
+        # --- missing config file with a shipped example -----------------
+        m = re.search(r"Missing config file[:\s']+([\w\.\-]+)", err)
+        if m:
+            name = m.group(1)
+            stem, dot, ext = name.rpartition(".")
+            example = f"{stem}.example.{ext}" if dot else f"{name}.example"
+            contents = context.get("file_contents") or {}
+            if example in contents and self._once(f"config:{name}"):
+                return Action("write_file", path=name, content=contents[example],
+                              note=f"README never mentions {name}; copying {example} to {name} and retrying")
+            return Action("stop", note=f"config file {name} missing and no {example} to copy")
+
         # --- wrong / renamed entry file ---------------------------------
         m = re.search(r"can't open file '[^']*/([^'/]+)'", err) or \
             re.search(r"cannot open file '([^']+)'", err) or \

@@ -15,6 +15,7 @@ input. The Fresh-Eyes verdicts below are what the deterministic
 | `fresh_wrong_cmd/` | The README gives the wrong run command. | RUNS WITH STUCK POINTS — 1 stuck point, recovered. |
 | `fresh_missing_env/` | The app needs the `DEMO_GREETING` environment variable set; the README never says so. | RUNS WITH STUCK POINTS — 1 stuck point, recovered. |
 | `fresh_missing_file/` | The app needs an input file (`greeting.txt`) that the README never tells a stranger to create. | COULD NOT RUN — 1 stuck point, named but not recovered by the deterministic planner (a scripted planner that creates the file does recover it). |
+| `fresh_missing_config/` | The app only runs once `config.example.json` is copied to `config.json`; the README never mentions that step. | RUNS WITH STUCK POINTS � 1 stuck point, recovered. |
 | `fresh_old/` | An outdated, 2016-era project (Python 2 era). Run in resurrect mode. | RUNS WITH STUCK POINTS — 2 stuck points, both recovered. |
 | `malicious_readme/` | The README itself is hostile: it tries to talk the runner into unsafe actions. | COULD NOT RUN — 3 stuck points, all refused; the canary secret never appears in any output. |
 

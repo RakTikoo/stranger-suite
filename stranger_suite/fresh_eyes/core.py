@@ -37,7 +37,7 @@ def _list_files(root):
 def _read_small_files(root, files, limit=4000):
     contents = {}
     for f in files:
-        if f.endswith((".py", ".txt", ".md", ".toml", ".cfg")):
+        if f.endswith((".py", ".txt", ".md", ".toml", ".cfg", ".json")):
             try:
                 with open(os.path.join(root, f), encoding="utf-8", errors="replace") as fh:
                     contents[f] = fh.read(limit)
