@@ -78,6 +78,15 @@ def test_scripted_planner_recovers_missing_file():
     assert rep["stuck_points"][0]["resolved"]
 
 
+def test_missing_config_found_and_recovers():
+    # New fault class: the app only runs once config.example.json is copied
+    # to config.json, a step the README never mentions.
+    rep, _ = run("fresh_missing_config", expect_marker="HELLO_CONFIG")
+    assert rep["verdict"] == "RUNS WITH STUCK POINTS", rep
+    assert len(rep["stuck_points"]) == 1 and rep["stuck_points"][0]["resolved"]
+    assert "config.json" in rep["stuck_points"][0]["error"]
+
+
 def test_old_project_resurrect():
     rep, _ = run("fresh_old", expect_marker="HELLO_FROM_2016", resurrect=True)
     assert rep["verdict"] == "RUNS WITH STUCK POINTS", rep

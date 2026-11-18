@@ -22,7 +22,7 @@ python3 -m stranger_suite.stranger_api --docs <docs-file> --base-url <local-api-
 python3 tests/run_tests.py
 ```
 
-All tests must pass (currently 29). The suite is fully offline and
+All tests must pass (currently 30). The suite is fully offline and
 deterministic — no network, no API keys. If your change fixes a bug or
 adds behaviour, add a test that would have caught it; several existing
 tests encode attacks found in adversarial review, and that pattern is
