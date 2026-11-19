@@ -1,4 +1,4 @@
-# Stranger Suite
+# Stranger Suite — test whether your README works for someone who has never seen your project
 
 [![Tests](https://github.com/RakTikoo/stranger-suite/actions/workflows/tests.yml/badge.svg)](https://github.com/RakTikoo/stranger-suite/actions/workflows/tests.yml)
 
@@ -15,6 +15,10 @@ runs things safely and keeps an honest diary) plus a replaceable
 "brain" (a planner that decides what to try next). The Fresh-Eyes
 scoring runs fully offline; the API exams are bring-your-own-key, and
 free tiers are fine.
+
+**Install in one step:** `pip install git+https://github.com/RakTikoo/stranger-suite`,
+then run `fresh-eyes <project-folder>`. Full options are under
+[Install](#install).
 
 **First contribution?** Start with a [good first issue](https://github.com/RakTikoo/stranger-suite/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 

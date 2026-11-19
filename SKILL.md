@@ -1,6 +1,6 @@
 ---
 name: stranger-suite
-description: Test whether your documentation actually works for a stranger. Fresh-Eyes follows a project's README exactly, like a brand-new user, and reports the exact step where a real person would give up (missing dependency, missing file, wrong command). Stranger API gives an agent only your API docs and one job, and reports every place the docs alone were not enough. Use when asked to test a README, check getting-started or setup instructions, onboard-test a project, or verify API documentation is complete.
+description: Test whether your documentation actually works for a stranger. Fresh-Eyes follows a project's README exactly, like a brand-new user, and reports the exact step where a real person would give up (missing dependency, missing file, wrong command). Stranger API gives an agent only your API docs and one job, and reports every place the docs alone were not enough. Use when asked to test a README, check getting-started or setup instructions, onboard-test a project, or verify API documentation is complete. Not for code review, security scanning (use skillscan for AI-agent skills), or performance and load testing — this suite tests instructions and documentation, not the code itself.
 license: MIT
 compatibility: Requires Python 3.12+ and pip. Fresh-Eyes scores fully offline with its built-in planner; an LLM planner is optional and uses your own key (free tiers work) or a local Ollama. Stranger API needs a locally running sandbox API to test against.
 ---
