@@ -276,6 +276,15 @@ and a docs file that order the agent to curl|bash a URL, print its key, or
 delete files) are part of the corpus, and the sandbox hands must refuse all
 of it no matter what any planner says.
 
+## Use with an AI agent
+
+This repo ships a [SKILL.md](SKILL.md) written to the Agent Skills open
+standard. If your coding agent supports skills, point it at this repo and
+it can install Stranger Suite, follow your README like a new user (or test
+your API docs), and read the verdict for you. The skill works as promised
+when the repo is cloned under its real name (`stranger-suite`) — the
+standard ties the skill's name to its folder.
+
 ## Layout
 
 ```
