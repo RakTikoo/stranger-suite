@@ -61,6 +61,12 @@ pip install git+https://github.com/RakTikoo/stranger-suite
 pipx install git+https://github.com/RakTikoo/stranger-suite
 ```
 
+With uv:
+
+```bash
+uv tool install git+https://github.com/RakTikoo/stranger-suite
+```
+
 Not on PyPI — the git URL is the package source. Stdlib only, so
 nothing else gets installed with it.
 
