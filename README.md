@@ -1,5 +1,7 @@
 # Stranger Suite — test whether your README works for someone who has never seen your project
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/RakTikoo/stranger-suite)
+
 [![Tests](https://github.com/RakTikoo/stranger-suite/actions/workflows/tests.yml/badge.svg)](https://github.com/RakTikoo/stranger-suite/actions/workflows/tests.yml)
 
 **Does your README actually work for someone who has never seen your
@@ -80,6 +82,8 @@ python3 -m stranger_suite.fresh_eyes <project-folder> --out report/
 
 Fresh-Eyes also runs in CI via the [GitHub Action](#github-action)
 below, and both tools can be called [as a library](#use-as-a-library).
+
+**For agent users:** this repository ships a `SKILL.md` for AI agents. Install it with `npx skills add RakTikoo/stranger-suite`.
 
 ## Fresh-Eyes — "Does your README actually work?" (lead tool)
 
