@@ -63,6 +63,13 @@ pip install git+https://github.com/RakTikoo/stranger-suite
 pipx install git+https://github.com/RakTikoo/stranger-suite
 ```
 
+Or install the wheel straight from this repo's release assets (no package
+registry involved):
+
+```sh
+pip install https://github.com/RakTikoo/stranger-suite/releases/download/v0.1.1/stranger_suite-0.1.1-py3-none-any.whl
+```
+
 With uv:
 
 ```bash
@@ -162,7 +169,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: RakTikoo/stranger-suite@v0.1.0
+      - uses: RakTikoo/stranger-suite@v0.1.1
         with:
           project: .
           expect: "text a successful run must print"

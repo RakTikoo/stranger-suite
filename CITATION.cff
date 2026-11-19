@@ -3,8 +3,8 @@ message: "If you use this software, please cite it as below."
 authors:
   - name: RakTikoo
 title: "stranger-suite: test whether your README works for someone who has never seen your project"
-version: 0.1.0
-date-released: 2026-11-12
+version: 0.1.1
+date-released: 2026-11-19
 license: MIT
 url: "https://github.com/RakTikoo/stranger-suite"
 repository-code: "https://github.com/RakTikoo/stranger-suite"

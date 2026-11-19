@@ -32,7 +32,7 @@ from .engine import (
 from .fresh_eyes import ReadmeCommand, parse_readme_commands, run_fresh_eyes
 from .stranger_api import build_client_source, parse_docs, run_stranger_api
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "__version__",

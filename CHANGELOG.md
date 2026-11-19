@@ -3,7 +3,12 @@
 All notable changes to Stranger Suite, newest first. Everything so far
 is the 0.1.0 line (`__version__` in `stranger_suite/__init__.py`).
 
-## Unreleased
+## v0.1.1 — 2026-11-19
+
+- **GitHub Marketplace:** the Action's `action.yml` description is
+  shortened to fit the Marketplace 125-character limit and
+  `branding` (icon/colour) is added, so the Action can be listed
+  on the GitHub Marketplace. No behaviour changes.
 
 - **Packaging:** `pyproject.toml` added — `pip install
   git+https://github.com/RakTikoo/stranger-suite` (or `pipx install …`)

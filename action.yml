@@ -1,5 +1,8 @@
 name: "Stranger Suite — Fresh-Eyes"
-description: "Run Fresh-Eyes on your project: it follows your README like a brand-new user (offline heuristic planner by default) and reports every place a stranger gets stuck. The report is written to the job summary and uploaded as an artifact."
+description: "Test whether your README works for a brand-new user: Fresh-Eyes follows it exactly and reports every stuck point."
+branding:
+  icon: "eye"
+  color: "orange"
 inputs:
   project:
     description: "Project folder to test (relative to the consumer workspace)"
