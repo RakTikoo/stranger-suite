@@ -10,7 +10,8 @@ instructions, not the code. **Fresh-Eyes** hands your project to a
 tireless new user who follows the README exactly and reports the exact
 step where a real person would have given up. **Stranger API** hands
 your API docs to an AI agent with a key and checks whether it can do
-real work from the docs alone — the way a stranger would.
+real work from the docs alone — the way a stranger would, and a direct
+test of whether your API is agent-ready.
 
 Both tools share one engine: deterministic "hands" (a sandbox that
 runs things safely and keeps an honest diary) plus a replaceable
