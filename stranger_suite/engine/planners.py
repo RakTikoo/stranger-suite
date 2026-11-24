@@ -171,7 +171,10 @@ class HeuristicPlanner(Planner):
             return Action("stop", note="syntax error not auto-fixable by heuristic planner")
 
         # --- pip: package not found (dead pin, resurrect) ---------------
-        m = re.search(r"No matching distribution found for ([\w\.\-]+)", err)
+        # pip phrases this two ways depending on version and index; the
+        # second line is not always printed, so match either one.
+        m = re.search(r"No matching distribution found for ([\w\.\-]+)", err) or \
+            re.search(r"Could not find a version that satisfies the requirement ([\w\.\-]+)", err)
         if m and self._once("deadpin"):
             req = (context.get("file_contents") or {}).get("requirements.txt", "")
             kept = [ln for ln in req.splitlines()
@@ -185,6 +188,19 @@ class HeuristicPlanner(Planner):
             act = self._api_action(context, err)
             if act is not None:
                 return act
+
+        # --- pip install died silently (usually the step timeout) -------
+        # After resolving, pip scans every installed package for
+        # conflicts; on a loaded machine that scan alone can exceed the
+        # per-command timeout, so the step is killed with no error text
+        # at all (exit code None, at most a warning). An install is safe
+        # to repeat, so retry it once before giving up. The verdict still
+        # comes only from the re-run's exit code, so this can never turn
+        # a broken install into a claimed success.
+        if (context.get("last_exit") is None and "pip" in cmd and "install" in cmd
+                and "ERROR" not in err and self._once("pip_silent_retry")):
+            return Action("retry",
+                          note="pip install gave no error text (likely killed by the step timeout on a loaded machine); installs are safe to repeat, so retrying once")
 
         return Action("stop", note="no heuristic for this error")
 
