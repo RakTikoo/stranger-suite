@@ -111,3 +111,45 @@ def test_write_file_content_scan_and_symlink():
     assert rep["verdict"] == "COULD NOT RUN"
     trace = open(os.path.join(out, "trace.jsonl")).read()
     assert "write_refused" in trace
+
+# --- dead-pin detection robustness (Nov 23, 2026) -------------------------
+# The old-project resurrect test went flaky on loaded machines: pip's
+# post-install conflict scan walks every installed package and can
+# exceed the step timeout, so the install dies with no error text and
+# the planner used to give up. These tests pin the three fixes: the
+# second pip wording for a dead pin, one retry for a silent pip death,
+# and no retry for non-pip commands.
+
+def _planner_ctx(**kw):
+    base = {"mode": "fresh", "current_command": "", "last_stdout": "",
+            "last_stderr": "", "last_exit": 1,
+            "files": ["requirements.txt", "app.py"],
+            "file_contents": {"requirements.txt": "deadpkg==0.0.1\n"},
+            "env_state": {}}
+    base.update(kw)
+    return base
+
+def test_deadpin_satisfies_requirement_wording():
+    p = HeuristicPlanner()
+    a = p.next_action(_planner_ctx(
+        current_command="python3 -m pip install -r requirements.txt",
+        last_stderr="ERROR: Could not find a version that satisfies the "
+                    "requirement deadpkg==0.0.1 (from versions: none)"))
+    assert a.type == "write_file", a
+    assert "deadpkg" not in a.content, a
+
+def test_pip_silent_timeout_retried_once():
+    p = HeuristicPlanner()
+    ctx = _planner_ctx(
+        current_command="python3 -m pip install -r requirements.txt",
+        last_exit=None,
+        last_stderr="WARNING: Running pip as the 'root' user can result "
+                    "in broken permissions")
+    assert p.next_action(ctx).type == "retry"
+    assert p.next_action(ctx).type == "stop"
+
+def test_nonpip_silent_failure_not_retried():
+    p = HeuristicPlanner()
+    a = p.next_action(_planner_ctx(current_command="python3 app.py",
+                                   last_exit=None, last_stderr=""))
+    assert a.type == "stop", a
