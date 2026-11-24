@@ -71,7 +71,12 @@ def run_fresh_eyes(project_dir, out_dir, planner, expect_marker=None,
     workdir = os.path.join(tmp, "project")
     shutil.copytree(project_dir, workdir,
                     ignore=shutil.ignore_patterns(*_IGNORE))
-    runner = SandboxRunner(workdir=workdir, redactor=redactor, trace=trace)
+    # pip installs get a longer per-command leash than the 20s default:
+    # after resolving, pip scans every installed package for conflicts,
+    # and on a loaded machine that scan alone can take far longer than
+    # 20s. The global step and time budgets still bound the whole run.
+    runner = SandboxRunner(workdir=workdir, redactor=redactor, trace=trace,
+                           per_command_timeout=45.0)
 
     readme_text = ""
     for cand in ("README.md", "readme.md", "Readme.md", "README.MD"):
@@ -99,6 +104,7 @@ def run_fresh_eyes(project_dir, out_dir, planner, expect_marker=None,
             "last_stderr": (result.stderr if result else "") +
                             (("REFUSED: " + result.refusal_reason) if result and result.refused else ""),
             "last_exit": result.exit_code if result else None,
+            "last_timed_out": bool(result.timed_out) if result else False,
             "files": _list_files(workdir),
             "file_contents": _read_small_files(workdir, _list_files(workdir)),
             "env_state": dict(env_state),
