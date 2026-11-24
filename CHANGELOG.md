@@ -3,6 +3,21 @@
 All notable changes to Stranger Suite, newest first. Everything so far
 is the 0.1.0 line (`__version__` in `stranger_suite/__init__.py`).
 
+## Unreleased
+
+- **Flaky old-project resurrect fixed.** The failure was not pip's
+  error wording: after resolving, pip scans every installed package
+  for conflicts, and on a loaded machine that scan alone can exceed
+  the step timeout — the install then dies with no error text at all
+  and the planner gave up. Three changes: the dead-pin detector also
+  matches pip's "Could not find a version that satisfies the
+  requirement …" wording; a pip install that dies silently (no exit
+  code, no error text) is retried once, since installs are safe to
+  repeat and the verdict still comes only from the re-run's exit
+  code; and Fresh-Eyes gives each command 45s instead of 20s, with
+  the global step and time budgets unchanged. Three regression tests
+  cover the new paths.
+
 ## v0.1.1 — 2026-11-19
 
 - **GitHub Marketplace:** the Action's `action.yml` description is
